@@ -3,18 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ThumbForge - Gelişmiş YouTube Kapak Oluşturucu</title>
-    <!-- Tailwind CSS CDN -->
+    <title>ThumbForge Pro - YouTube Kapak Oluşturucu</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Fabric.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
-    <!-- Google Fonts Entegrasyonu (Popüler YouTube Fontları) -->
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Lobster&family=Montserrat:ital,wght@0,800;1,800&family=Oswald:wght@700&family=Pacifico&family=Permanent+Marker&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Bebas+Neue&family=Black+Ops+One&family=Cinzel:wght@900&family=Creepster&family=Fredoka:wght@700&family=Lobster&family=Luckiest+Guy&family=Monoton&family=Montserrat:wght@900&family=Oswald:wght@700&family=Pacifico&family=Permanent+Marker&family=Poppins:wght@700;900&family=Press+Start+2P&family=Righteous&family=Rubik+Glitch&family=Titan+One&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #0b0f19; color: #f8fafc; }
+        body { font-family: 'Poppins', sans-serif; background-color: #0b0f19; color: #f8fafc; touch-action: manipulation; }
         .canvas-bg {
             background-color: #1e293b;
             background-image: radial-gradient(#334155 1px, transparent 1px);
@@ -24,86 +20,131 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
         input[type="color"]::-webkit-color-swatch { border: none; border-radius: 6px; }
+        /* Mobilde tuval dışındaki alanlarda scroll kilitlenmesini çözen kural */
+        .canvas-container { margin: 0 auto !important; touch-action: pan-y !important; }
     </style>
 </head>
-<body class="h-screen flex flex-col md:flex-row overflow-hidden select-none">
+<body class="min-h-screen flex flex-col md:flex-row overflow-x-hidden bg-slate-950">
 
     <!-- SOL KONTROL PANELDİ -->
-    <aside class="w-full md:w-[420px] bg-slate-900 border-r border-slate-800 flex flex-col h-[55vh] md:h-full z-20 shadow-2xl">
+    <aside class="w-full md:w-[460px] bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 z-20 shadow-2xl">
         
-        <!-- Header & Boyut Değişimi -->
-        <div class="p-3 border-b border-slate-800 flex items-center justify-between bg-slate-950">
-            <h1 class="text-lg font-black tracking-wider text-red-500 flex items-center gap-2">
-                <i class="fa-solid fa-fire text-orange-500"></i> ThumbForge
+        <!-- Header -->
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+            <h1 class="text-xl font-black tracking-wider text-red-500 flex items-center gap-2">
+                <i class="fa-solid fa-fire text-orange-500"></i> ThumbForge Pro
             </h1>
-            <div class="flex bg-slate-800 p-1 rounded-lg border border-slate-700">
-                <button id="btn169" onclick="changeRatio('16:9')" class="px-3 py-1 text-xs font-bold rounded-md bg-red-600 text-white transition">16:9 Yatay</button>
-                <button id="btn916" onclick="changeRatio('9:16')" class="px-3 py-1 text-xs font-bold rounded-md text-slate-400 hover:text-white transition">9:16 Dikey</button>
-            </div>
+            <span class="px-3 py-1 text-xs font-bold rounded-md bg-red-600/20 text-red-400 border border-red-500/30">16:9 Standart</span>
         </div>
 
         <!-- Menü Sekmeleri -->
         <div class="flex border-b border-slate-800 bg-slate-950 text-xs font-bold overflow-x-auto no-scrollbar">
-            <button onclick="switchTab('ai')" id="tab-ai" class="flex-1 py-3 px-3 border-b-2 border-red-500 text-red-500 flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-robot"></i> AI & Rastgele</button>
-            <button onclick="switchTab('text')" id="tab-text" class="flex-1 py-3 px-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-font"></i> Metin</button>
-            <button onclick="switchTab('image')" id="tab-image" class="flex-1 py-3 px-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-image"></i> Görsel/Galeri</button>
-            <button onclick="switchTab('templates')" id="tab-templates" class="flex-1 py-3 px-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-layer-group"></i> 20 Şablon</button>
+            <button onclick="switchTab('ai')" id="tab-ai" class="flex-1 py-3.5 px-3 border-b-2 border-red-500 text-red-500 flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-robot"></i> AI & Random</button>
+            <button onclick="switchTab('text')" id="tab-text" class="flex-1 py-3.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-font"></i> Metin Editorü</button>
+            <button onclick="switchTab('image')" id="tab-image" class="flex-1 py-3.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-image"></i> Görsel/Galeri</button>
+            <button onclick="switchTab('templates')" id="tab-templates" class="flex-1 py-3.5 px-3 border-b-2 border-transparent text-slate-400 hover:text-white flex items-center justify-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-layer-group"></i> 30 Şablon</button>
         </div>
 
         <!-- Sekme İçerikleri -->
-        <div class="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
+        <div class="p-4 space-y-4 text-xs overflow-y-auto max-h-[calc(100vh-140px)] no-scrollbar">
             
             <!-- 1. AI & RASTGELE SEKMESİ -->
             <div id="sec-ai" class="space-y-4">
                 <div class="bg-slate-800/80 p-3.5 rounded-xl border border-slate-700 space-y-2.5">
-                    <label class="font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-red-400"></i> AI Yapay Zeka Arka Plan Motoru</label>
-                    <textarea id="aiPrompt" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-red-500" placeholder="Örn: Minecraft castle sunset, realistic lighting, 8k render..."></textarea>
+                    <label class="font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-red-400"></i> Akıllı AI Prompt & Araştırma Motoru</label>
+                    <textarea id="aiPrompt" rows="2" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-red-500" placeholder="Örn: Spider-Man, GTA 6, Uzayda Savaş, Cyberpunk..."></textarea>
                     
-                    <div class="flex gap-2">
-                        <select id="aiStyle" class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-300 w-full font-semibold">
-                            <option value="">Stil Seçilmedi (Doğal)</option>
-                            <option value="photorealistic, 8k, cinematic lighting">Sinematik / Gerçekçi</option>
-                            <option value="cyberpunk style, neon lights, highly detailed">Cyberpunk / Neon</option>
-                            <option value="anime style, studio ghibli, vibrant colors">Anime / Çizim</option>
-                            <option value="3d render, blender render, isometric, sharp focus">3D Render / Oyun</option>
-                        </select>
+                    <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-lg border border-slate-800">
+                        <input type="checkbox" id="aiResearchCheck" checked class="accent-red-500 w-4 h-4 cursor-pointer">
+                        <label for="aiResearchCheck" class="text-[11px] text-slate-300 font-medium cursor-pointer">Google/Web araması ile karakter, atmosfer ve görsel detayları AI promptuna otomatik ekle</label>
                     </div>
 
-                    <button onclick="generateAIImage()" id="btnGenerateAI" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 py-2.5 rounded-lg font-black text-white shadow-lg flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-bolt"></i> AI Görsel Üret & Arka Plan Yap
+                    <select id="aiStyle" class="bg-slate-950 border border-slate-700 rounded-lg p-2 text-slate-300 w-full font-semibold">
+                        <option value="photorealistic 8k, cinematic youtube thumbnail background, highly detailed">Sinematik / Gerçekçi</option>
+                        <option value="cyberpunk sci-fi space aesthetic, neon glow, futuristic background">Uzay & Cyberpunk</option>
+                        <option value="vibrant anime studio ghibli style background, detailed art">Anime & Çizim</option>
+                        <option value="3d unreal engine 5 render, epic gaming background">3D Oyun / Render</option>
+                    </select>
+
+                    <button onclick="generateAIImage()" id="btnGenerateAI" class="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 py-3 rounded-lg font-black text-white shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Bilgi Araştır & AI Arka Plan Üret
                     </button>
                 </div>
 
                 <div class="bg-slate-800/50 p-3.5 rounded-xl border border-slate-700 space-y-2">
-                    <button onclick="generateRandomThumbnail()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg transition">
-                        <i class="fa-solid fa-dice"></i> 🎲 RASTGELE TASARIM OLUŞTUR
+                    <button onclick="generateRandomThumbnail()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3.5 rounded-xl font-black text-sm flex items-center justify-center gap-2 shadow-lg transition">
+                        <i class="fa-solid fa-dice"></i> 🎲 100 KELİMELİK RASTGELE KAPAK OLUŞTUR
                     </button>
-                    <p class="text-[11px] text-slate-400 text-center">Şablon dışı, tamamen dinamik rastgele renk, font, arka plan ve metin stili oluşturur!</p>
+                    <p class="text-[11px] text-slate-400 text-center">100 farklı popüler kelime ve uyumlu HD arka plan kombinasyonlarıyla dinamik kapak üretir.</p>
                 </div>
             </div>
 
             <!-- 2. METİN SEKMESİ -->
             <div id="sec-text" class="hidden space-y-4">
-                <button onclick="addText()" class="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow">
-                    <i class="fa-solid fa-plus"></i> Tuval üzerine Yeni Metin Ekle
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="addText()" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-2.5 rounded-lg font-bold flex items-center justify-center gap-2 shadow">
+                        <i class="fa-solid fa-plus"></i> Yeni Metin Ekle
+                    </button>
+                    <button onclick="deselectObject()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-2.5 rounded-lg font-bold" title="Seçimi Kaldır">
+                        <i class="fa-solid fa-arrow-pointer"></i> Seçimden Çık
+                    </button>
+                </div>
 
-                <!-- Seçili Metin Özellik Düzenleyicisi -->
                 <div class="space-y-3 bg-slate-800/60 p-3.5 rounded-xl border border-slate-700">
-                    <span class="font-bold text-slate-300 block border-b border-slate-700 pb-1"><i class="fa-solid fa-sliders"></i> Metin Biçimlendirme</span>
+                    <span class="font-bold text-slate-300 block border-b border-slate-700 pb-1.5"><i class="fa-solid fa-sliders"></i> Metin & Konum Düzenleyici</span>
                     
                     <div>
-                        <label class="text-[11px] font-bold text-slate-400 block mb-1">Yazı Tipi (Font)</label>
+                        <label class="text-[11px] font-bold text-slate-400 block mb-1">Yazı Tipi (18 Yeni Tip Font)</label>
                         <select id="fontFamily" onchange="updateTextProperty('fontFamily', this.value)" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 font-bold text-white">
                             <option value="Anton">Anton (Bold/Gaming)</option>
                             <option value="Bebas Neue">Bebas Neue (YouTube Klasik)</option>
                             <option value="Montserrat">Montserrat (Kalın/Modern)</option>
+                            <option value="Press Start 2P">Press Start 2P (Pixel/Retro)</option>
+                            <option value="Righteous">Righteous (Fütüristik)</option>
+                            <option value="Fredoka">Fredoka (Yuvarlak/Sevimli)</option>
+                            <option value="Monoton">Monoton (Neon/Çizgili)</option>
+                            <option value="Cinzel">Cinzel (Epik/Mitolojik)</option>
+                            <option value="Rubik Glitch">Rubik Glitch (Glitch/Bozuk)</option>
+                            <option value="Creepster">Creepster (Korku/Cadılar)</option>
+                            <option value="Luckiest Guy">Luckiest Guy (Çizgi Film)</option>
+                            <option value="Black Ops One">Black Ops One (Askeri/FPS)</option>
+                            <option value="Titan One">Titan One (Dev/Kabartma)</option>
+                            <option value="Bangers">Bangers (Çizgi Roman)</option>
                             <option value="Pacifico">Pacifico (Kursif/El Yazısı)</option>
-                            <option value="Bangers">Bangers (Çizgi Roman/Eğlence)</option>
                             <option value="Permanent Marker">Permanent Marker (Grafiti)</option>
                             <option value="Lobster">Lobster (Süslü Kursif)</option>
                             <option value="Oswald">Oswald (Dik/Keskin)</option>
                         </select>
+                    </div>
+
+                    <!-- Boyut Slider -->
+                    <div>
+                        <div class="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
+                            <span>Metin Boyutu / Ölçek</span>
+                            <span id="fontSizeVal">80px</span>
+                        </div>
+                        <input type="range" id="fontSizeSlider" min="20" max="220" value="80" oninput="document.getElementById('fontSizeVal').innerText=this.value+'px'; updateTextProperty('fontSize', parseInt(this.value))" class="w-full">
+                    </div>
+
+                    <!-- Harf Arası Boşluk -->
+                    <div>
+                        <div class="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
+                            <span>Harf Arası Aralık</span>
+                            <span id="charSpacingVal">0</span>
+                        </div>
+                        <input type="range" id="charSpacingSlider" min="-50" max="300" value="0" oninput="document.getElementById('charSpacingVal').innerText=this.value; updateTextProperty('charSpacing', parseInt(this.value))" class="w-full">
+                    </div>
+
+                    <!-- Konum Hizalama Butonları -->
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-400 block mb-1">Hızlı Konumlandırma</label>
+                        <div class="grid grid-cols-5 gap-1">
+                            <button onclick="moveText('left')" class="bg-slate-950 border border-slate-700 p-2 rounded hover:bg-slate-800"><i class="fa-solid fa-arrow-left"></i></button>
+                            <button onclick="moveText('up')" class="bg-slate-950 border border-slate-700 p-2 rounded hover:bg-slate-800"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button onclick="moveText('center')" class="bg-slate-950 border border-slate-700 p-2 rounded hover:bg-slate-800 font-bold">Ortala</button>
+                            <button onclick="moveText('down')" class="bg-slate-950 border border-slate-700 p-2 rounded hover:bg-slate-800"><i class="fa-solid fa-arrow-down"></i></button>
+                            <button onclick="moveText('right')" class="bg-slate-950 border border-slate-700 p-2 rounded hover:bg-slate-800"><i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
                     </div>
 
                     <div class="flex gap-1.5">
@@ -123,18 +164,27 @@
                         </div>
                     </div>
 
-                    <!-- Kenarlık (Stroke) & Gölge -->
                     <div class="space-y-2 pt-2 border-t border-slate-700">
                         <div class="flex items-center justify-between">
-                            <label class="text-[11px] font-bold text-slate-400">Dış Çizgi Rengi</label>
-                            <input type="color" onchange="updateTextProperty('stroke', this.value)" value="#000000" class="w-7 h-7 bg-transparent cursor-pointer rounded">
+                            <label class="text-[11px] font-bold text-slate-400">Dış Çizgi (Stroke)</label>
+                            <input type="color" id="strokeColor" onchange="updateTextProperty('stroke', this.value)" value="#000000" class="w-7 h-7 bg-transparent cursor-pointer rounded">
                         </div>
                         <div>
-                            <label class="text-[10px] font-bold text-slate-400 flex justify-between">
-                                <span>Dış Çizgi Kalınlığı</span>
-                                <span id="strokeWidthVal">2</span>
-                            </label>
-                            <input type="range" min="0" max="10" value="2" oninput="document.getElementById('strokeWidthVal').innerText=this.value; updateTextProperty('strokeWidth', parseInt(this.value))" class="w-full">
+                            <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
+                                <span>Çizgi Kalınlığı</span>
+                                <span id="strokeWidthVal">3</span>
+                            </div>
+                            <input type="range" id="strokeWidthSlider" min="0" max="20" value="3" oninput="document.getElementById('strokeWidthVal').innerText=this.value; updateTextProperty('strokeWidth', parseInt(this.value))" class="w-full">
+                        </div>
+                    </div>
+
+                    <!-- Neon / Gölge Efekti -->
+                    <div class="pt-2 border-t border-slate-700 space-y-1.5">
+                        <label class="text-[11px] font-bold text-slate-400 block">Metin Glow / Gölge Efekti</label>
+                        <div class="flex gap-2">
+                            <button onclick="applyGlow('#ff0055')" class="flex-1 bg-red-950 border border-red-800 text-red-300 py-1.5 rounded font-bold">Kırmızı Glow</button>
+                            <button onclick="applyGlow('#00e5ff')" class="flex-1 bg-cyan-950 border border-cyan-800 text-cyan-300 py-1.5 rounded font-bold">Mavi Glow</button>
+                            <button onclick="applyGlow(null)" class="bg-slate-950 border border-slate-700 px-2 rounded text-slate-400">Kaldır</button>
                         </div>
                     </div>
                 </div>
@@ -143,122 +193,173 @@
             <!-- 3. GÖRSEL & ARKA PLAN SEKMESİ -->
             <div id="sec-image" class="hidden space-y-4">
                 <div class="bg-slate-800/60 p-3.5 rounded-xl border border-slate-700 space-y-3">
-                    <span class="font-bold text-slate-300 block border-b border-slate-700 pb-1"><i class="fa-solid fa-mobile-screen"></i> Cihaz Galerisinden Fotoğraf Ekle</span>
+                    <span class="font-bold text-slate-300 block border-b border-slate-700 pb-2"><i class="fa-solid fa-mobile-screen"></i> Cihaz Galerisinden Fotoğraf Ekle</span>
                     
-                    <div class="grid grid-cols-2 gap-2">
+                    <!-- BİREBİR EŞİTLENMİŞ BUTONLAR -->
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
                             <input type="file" id="bgLoader" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'bg')">
-                            <label for="bgLoader" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700 p-3 rounded-lg font-bold text-center block cursor-pointer text-slate-300">
-                                <i class="fa-solid fa-wallpaper text-red-500 block text-lg mb-1"></i>
-                                Arka Plan Yap
+                            <label for="bgLoader" class="flex flex-col items-center justify-center p-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-red-500 rounded-xl cursor-pointer h-24 transition">
+                                <i class="fa-solid fa-wallpaper text-2xl text-red-500 mb-1.5"></i>
+                                <span class="text-xs font-bold text-slate-200">Arka Plan Yap</span>
                             </label>
                         </div>
                         <div>
                             <input type="file" id="overlayLoader" accept="image/*" class="hidden" onchange="handleImageUpload(event, 'overlay')">
-                            <label for="overlayLoader" class="w-full bg-slate-950 hover:bg-slate-800 border border-slate-700 p-3 rounded-lg font-bold text-center block cursor-pointer text-slate-300">
-                                <i class="fa-solid fa-layer-group text-blue-500 block text-lg mb-1"></i>
-                                Üst Katman Ekle
+                            <label for="overlayLoader" class="flex flex-col items-center justify-center p-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 hover:border-blue-500 rounded-xl cursor-pointer h-24 transition">
+                                <i class="fa-solid fa-layer-group text-2xl text-blue-500 mb-1.5"></i>
+                                <span class="text-xs font-bold text-slate-200">Üst Katman Ekle</span>
                             </label>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <label class="font-bold text-slate-300 block mb-2"><i class="fa-solid fa-images"></i> Hazır HD Arka Plan Galerisi</label>
-                    <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto no-scrollbar">
-                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=600" onclick="setCanvasBg(this.src)" class="rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover">
-                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600" onclick="setCanvasBg(this.src)" class="rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover">
-                        <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=600" onclick="setCanvasBg(this.src)" class="rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover">
-                        <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600" onclick="setCanvasBg(this.src)" class="rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover">
-                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600" onclick="setCanvasBg(this.src)" class="rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover">
-                        <img src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600" onclick="setCanvasBg(this.src)" class="rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover">
+                    <label class="font-bold text-slate-300 block mb-2"><i class="fa-solid fa-images"></i> HD Hazır Arka Plan Galerisi</label>
+                    <div id="bgGalleryGrid" class="grid grid-cols-2 gap-2 max-h-60 overflow-y-auto no-scrollbar">
+                        <!-- JS Tarafından Yüklenecek -->
                     </div>
                 </div>
             </div>
 
-            <!-- 4. ŞABLONLAR SEKMESİ (20 ADET) -->
+            <!-- 4. ŞABLONLAR SEKMESİ (30 ADET ARKA PLANLI) -->
             <div id="sec-templates" class="hidden space-y-3">
-                <span class="font-bold text-slate-300 block"><i class="fa-solid fa-border-all"></i> 20 Adet Özel Hazır Şablon</span>
+                <span class="font-bold text-slate-300 block"><i class="fa-solid fa-border-all"></i> 30 Adet Arka Planlı Şablon</span>
                 <div id="templatesGrid" class="grid grid-cols-2 gap-2 max-h-96 overflow-y-auto no-scrollbar">
-                    <!-- 20 Şablon JavaScript tarafında dinamik üretilir -->
+                    <!-- 30 Şablon JavaScript tarafında üretilir -->
                 </div>
             </div>
 
         </div>
 
-        <!-- Katman Düzenleme & İndirme Barı -->
-        <div class="p-3 border-t border-slate-800 bg-slate-950 flex flex-col gap-2">
-            <div class="flex gap-2">
-                <button onclick="bringForward()" class="flex-1 bg-slate-800 hover:bg-slate-700 py-1.5 rounded font-bold text-[11px] text-slate-300" title="Öne Getir"><i class="fa-solid fa-arrow-up"></i> Öne Al</button>
-                <button onclick="sendBackward()" class="flex-1 bg-slate-800 hover:bg-slate-700 py-1.5 rounded font-bold text-[11px] text-slate-300" title="Arkaya Gönder"><i class="fa-solid fa-arrow-down"></i> Arkaya Al</button>
-                <button onclick="deleteActiveObject()" class="bg-red-950 border border-red-800 text-red-400 px-3 py-1.5 rounded font-bold text-[11px] hover:bg-red-900" title="Seçileni Sil"><i class="fa-solid fa-trash"></i></button>
-            </div>
-            <button onclick="downloadThumbnail()" class="w-full bg-red-600 hover:bg-red-500 text-white font-black py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shadow-lg">
+        <!-- Alt İndirme Barı -->
+        <div class="p-4 border-t border-slate-800 bg-slate-950 flex gap-2">
+            <button onclick="deleteActiveObject()" class="bg-red-950 border border-red-800 text-red-400 p-3 rounded-lg font-bold hover:bg-red-900" title="Seçileni Sil">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+            <button onclick="downloadThumbnail()" class="flex-1 bg-red-600 hover:bg-red-500 text-white font-black py-3 rounded-lg text-xs flex items-center justify-center gap-2 shadow-lg">
                 <i class="fa-solid fa-download"></i> KAPAĞI YÜKSEK KALİTEDE İNDİR (HD)
             </button>
         </div>
     </aside>
 
     <!-- SAĞ/ORTA ÇALIŞMA ALANI (CANVAS) -->
-    <main class="flex-1 canvas-bg p-4 relative flex items-center justify-center overflow-hidden">
+    <main class="flex-1 canvas-bg p-4 relative flex items-center justify-center min-h-[65vh] md:min-h-screen overflow-y-auto">
         <div id="canvasParent" class="shadow-2xl border-2 border-slate-700 rounded-xl overflow-hidden flex items-center justify-center bg-black">
             <canvas id="c"></canvas>
         </div>
     </main>
 
-    <!-- SKRİPT MANTIĞI -->
+    <!-- SCRIPT ENGINE -->
     <script>
         let canvas;
-        let currentRatio = "16:9";
+        const TARGET_DIM = { width: 1280, height: 720 }; // Sabit 16:9 HD
 
-        const RATIOS = {
-            "16:9": { width: 1280, height: 720 },
-            "9:16": { width: 720, height: 1280 }
-        };
+        // 100 Kelimelik Rastgele Havuz
+        const RANDOM_WORDS = [
+            "EFSANE", "GİZLİ", "ŞOK", "DEV", "İMKANSIZ", "100 DAKİKA", "SON DAKİKA", "UZAY", "GALAXY", "SÜPER", 
+            "TEHLİKE", "GECE 03:00", "KAÇIRMA", "24 SAAT", "HİLE", "REKOR", "EFSANEVİ", "KORKU", "ÇILGIN", "GERÇEK", 
+            "SATIŞTA", "CANLI", "SÜRPRİZ", "GİZEMLİ", "YASAK", "TAKTİK", "GÜNCELLEME", "GİZLİ BÖLGE", "KUTU AÇILIMI", "BEDAVA", 
+            "SINIRSIZ", "SON BÖLÜM", "EFSANEVİ OYUN", "TÜRKİYE", "İLK DEFA", "ÖZEL", "DÜNYA REKORU", "SAVAŞ", "KAÇIŞ", "BÜYÜK MAÇ", 
+            "GÖREV", "ZAFER", "BİLGİ", "UZAYLI", "CANAVAR", "ALTIN", "ELMAS", "NÜKLEER", "SİBER", "GELECEK", 
+            "ANİME", "ROBLOX", "MINECRAFT", "GTA 6", "VALORANT", "CS2", "FOOTBALL", "GALATASARAY", "KODLAMA", "PYTHON", 
+            "YAZILIM", "TEKNOLOJİ", "YENİ VİDEO", "TEPKİ", "REACTION", "VLOG", "SEYAHAT", "YEMEK", "TARİF", "KAPAK", 
+            "THUMBNAIL", "PARAMETRE", "BİLGİSAYAR", "TELEFON", "İNCELEME", "KARŞILAŞTIRMA", "EN İYİ", "EN KÖTÜ", "YAPAY ZEKA", "AI", 
+            "İTİRAF", "HİKAYE", "GERÇEKLER", "CİHAZ", "EKRAN", "HIZ TESTİ", "FPS", "GRAPHICS", "KAZANÇ", "KRİPTO", 
+            "BITCOIN", "BORSA", "MOTİVASYON", "BAŞARI", "ZENGİN", "FİRAR", "BATIŞ", "TUZAK", "BÖLÜM #1", "BİTTİ"
+        ];
+
+        // HD Arka Plan Havuzu
+        const HD_BACKGROUNDS = [
+            "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280", // Uzay Galaksi
+            "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280",
+            "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280",
+            "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1280",
+            "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280",
+            "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280",
+            "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1280",
+            "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1280"
+        ];
+
+        // 30 Tamamı Arka Planlı Şablon Verisi
+        const TEMPLATES_DATA = [
+            { name: "Uzay / Galaxy", bg: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280", text: "DERİNLİKLERDE!", font: "Cinzel", color: "#38bdf8" },
+            { name: "Gaming / FPS", bg: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280", text: "EFSANE MAÇ!", font: "Black Ops One", color: "#ef4444" },
+            { name: "Cyberpunk Neon", bg: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1280", text: "2077 GELECEK", font: "Rubik Glitch", color: "#22c55e" },
+            { name: "Korku / Gece", bg: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1280", text: "GECE 03:00...", font: "Creepster", color: "#dc2626" },
+            { name: "Retro Pixel", bg: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280", text: "GAME OVER", font: "Press Start 2P", color: "#facc15" },
+            { name: "Vlog / Günlük", bg: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280", text: "BİR GÜNÜM!", font: "Pacifico", color: "#ffffff" },
+            { name: "Teknoloji", bg: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280", text: "SATIN ALDIM!", font: "Montserrat", color: "#38bdf8" },
+            { name: "Soru & Cevap", bg: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1280", text: "SORULARINIZ!", font: "Bangers", color: "#ffffff" },
+            { name: "Futbol / Maç", bg: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1280", text: "DEV DERBİ!", font: "Bebas Neue", color: "#facc15" },
+            { name: "Yazılım / Kod", bg: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1280", text: "PYTHON 2026", font: "Righteous", color: "#60a5fa" },
+            { name: "Çizgi Film", bg: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1280", text: "ÇILGIN MACERA", font: "Luckiest Guy", color: "#fde047" },
+            { name: "Mitoloji", bg: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280", text: "KRALIN DÖNÜŞÜ", font: "Cinzel", color: "#eab308" },
+            { name: "Eğitim / Rehber", bg: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1280", text: "0'DAN 100'E", font: "Fredoka", color: "#ffffff" },
+            { name: "Dev/Chunky", bg: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1280", text: "BÜYÜK YENİLİK", font: "Titan One", color: "#f97316" },
+            { name: "Neon Işık", bg: "https://images.unsplash.com/photo-1563089145-599997674d42?w=1280", text: "NEON CITY", font: "Monoton", color: "#a855f7" },
+            { name: "Kripto / Borsa", bg: "https://images.unsplash.com/photo-1621416894569-0f39ed31d247?w=1280", text: "BÜYÜK YÜKSELİŞ", font: "Montserrat", color: "#10b981" },
+            { name: "Spor / Fitness", bg: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=1280", text: "DEĞİŞİM BAŞLADI", font: "Anton", color: "#ef4444" },
+            { name: "Müzik / Beat", bg: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=1280", text: "TRAP BEAT 2026", font: "Permanent Marker", color: "#ec4899" },
+            { name: "Tepki / Reaction", bg: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1280", text: "ŞOK OLDU!", font: "Bangers", color: "#facc15" },
+            { name: "Yemek / Tarif", bg: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1280", text: "EN İYİ TARİF", font: "Lobster", color: "#fde047" },
+            { name: "Sinema / Film", bg: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=1280", text: "FİLM İNCELEMESİ", font: "Oswald", color: "#e11d48" },
+            { name: "E-Ticaret", bg: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1280", text: "%50 İNDİRİM!", font: "Anton", color: "#facc15" },
+            { name: "Seyahat / Travel", bg: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1280", text: "AMSTERDAM!", font: "Pacifico", color: "#ffffff" },
+            { name: "Motivasyon", bg: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1280", text: "ASLA VAZGEÇME", font: "Oswald", color: "#eab308" },
+            { name: "Araba / Hız", bg: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1280", text: "300 KM/H HIZ!", font: "Black Ops One", color: "#ef4444" },
+            { name: "Bilim / Doğa", bg: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1280", text: "GİZLİ GERÇEKLER", font: "Righteous", color: "#38bdf8" },
+            { name: "Gizem / Dedektif", bg: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1280", text: "ÇÖZÜLEMEYEN SIR", font: "Creepster", color: "#a855f7" },
+            { name: "Kutu Açılımı", bg: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1280", text: "NE ÇIKTI?!", font: "Luckiest Guy", color: "#22c55e" },
+            { name: "Moda / Style", bg: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1280", text: "YENİ TARZIN", font: "Montserrat", color: "#ffffff" },
+            { name: "Minimalist", bg: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280", text: "SADECE İZLE.", font: "Montserrat", color: "#a1a1aa" }
+        ];
 
         window.onload = function() {
             initCanvas();
-            render20Templates();
+            renderBgGallery();
+            render30Templates();
             window.addEventListener('resize', resizeCanvasContainer);
         };
 
         function initCanvas() {
-            const targetDim = RATIOS[currentRatio];
             canvas = new fabric.Canvas('c', {
-                width: targetDim.width,
-                height: targetDim.height,
+                width: TARGET_DIM.width,
+                height: TARGET_DIM.height,
                 backgroundColor: '#0f172a',
-                preserveObjectStacking: true
+                preserveObjectStacking: true,
+                allowTouchScrolling: true // Mobil kaydırmayı kilitlenmekten kurtarır
             });
 
-            // Başlangıç Varsayılan Metni
-            loadTemplate(1);
+            // Seçim Değiştiğinde Sol Paneli Otomatik Güncelleme
+            canvas.on('selection:created', syncUIFromSelection);
+            canvas.on('selection:updated', syncUIFromSelection);
+
+            // Boşluğa Tıklanınca Seçimden Çık
+            canvas.on('mouse:down', function(e) {
+                if (!e.target) {
+                    canvas.discardActiveObject();
+                    canvas.renderAll();
+                }
+            });
+
+            loadTemplate(1); // Varsayılan Uzay Şablonu
             resizeCanvasContainer();
         }
 
         function resizeCanvasContainer() {
             const wrapper = document.querySelector('main');
-            const maxWidth = wrapper.clientWidth - 40;
-            const maxHeight = wrapper.clientHeight - 40;
+            const maxWidth = wrapper.clientWidth - 32;
+            const maxHeight = wrapper.clientHeight - 32;
 
-            const targetDim = RATIOS[currentRatio];
-            const scale = Math.min(maxWidth / targetDim.width, maxHeight / targetDim.height);
+            const scale = Math.min(maxWidth / TARGET_DIM.width, maxHeight / TARGET_DIM.height);
 
             canvas.setDimensions({
-                width: targetDim.width * scale,
-                height: targetDim.height * scale
+                width: TARGET_DIM.width * scale,
+                height: TARGET_DIM.height * scale
             });
 
             canvas.setZoom(scale);
-        }
-
-        function changeRatio(ratio) {
-            currentRatio = ratio;
-            document.getElementById('btn169').className = ratio === '16:9' ? 'px-3 py-1 text-xs font-bold rounded-md bg-red-600 text-white transition' : 'px-3 py-1 text-xs font-bold rounded-md text-slate-400 hover:text-white transition';
-            document.getElementById('btn916').className = ratio === '9:16' ? 'px-3 py-1 text-xs font-bold rounded-md bg-red-600 text-white transition' : 'px-3 py-1 text-xs font-bold rounded-md text-slate-400 hover:text-white transition';
-
-            canvas.clear();
-            initCanvas();
         }
 
         function switchTab(tabName) {
@@ -275,22 +376,44 @@
             activeBtn.classList.add('border-red-500', 'text-red-500');
         }
 
-        // --- METİN YÖNETİMİ ---
+        // --- ÇİFT YÖNLÜ SENKRONİZASYON ---
+        function syncUIFromSelection() {
+            const active = canvas.getActiveObject();
+            if (active && (active.type === 'i-text' || active.type === 'text')) {
+                document.getElementById('fontFamily').value = active.fontFamily || 'Anton';
+                document.getElementById('fontSizeSlider').value = active.fontSize || 80;
+                document.getElementById('fontSizeVal').innerText = (active.fontSize || 80) + 'px';
+                document.getElementById('charSpacingSlider').value = active.charSpacing || 0;
+                document.getElementById('charSpacingVal').innerText = active.charSpacing || 0;
+                if(active.fill) document.getElementById('textColor').value = active.fill;
+                if(active.stroke) document.getElementById('strokeColor').value = active.stroke;
+                if(active.strokeWidth !== undefined) {
+                    document.getElementById('strokeWidthSlider').value = active.strokeWidth;
+                    document.getElementById('strokeWidthVal').innerText = active.strokeWidth;
+                }
+            }
+        }
+
+        // --- METİN İŞLEMLERİ ---
         function addText() {
-            const dim = RATIOS[currentRatio];
             const text = new fabric.IText('YENİ METİN', {
-                left: dim.width / 2,
-                top: dim.height / 2,
+                left: TARGET_DIM.width / 2,
+                top: TARGET_DIM.height / 2,
                 fontFamily: 'Bebas Neue',
                 fontSize: 80,
                 fill: '#ffffff',
                 stroke: '#000000',
-                strokeWidth: 2,
+                strokeWidth: 3,
                 originX: 'center',
                 originY: 'center'
             });
             canvas.add(text);
             canvas.setActiveObject(text);
+        }
+
+        function deselectObject() {
+            canvas.discardActiveObject();
+            canvas.renderAll();
         }
 
         function updateTextProperty(prop, value) {
@@ -311,18 +434,62 @@
             }
         }
 
-        // --- KATMAN & RESİM YÖNETİMİ ---
+        function applyGlow(color) {
+            const active = canvas.getActiveObject();
+            if (active) {
+                if(!color) {
+                    active.set('shadow', null);
+                } else {
+                    active.set('shadow', new fabric.Shadow({
+                        color: color,
+                        blur: 25,
+                        offsetX: 0,
+                        offsetY: 0
+                    }));
+                }
+                canvas.renderAll();
+            }
+        }
+
+        function moveText(dir) {
+            const active = canvas.getActiveObject();
+            if (!active) return;
+            const step = 25;
+            if (dir === 'left') active.left -= step;
+            if (dir === 'right') active.left += step;
+            if (dir === 'up') active.top -= step;
+            if (dir === 'down') active.top += step;
+            if (dir === 'center') {
+                active.left = TARGET_DIM.width / 2;
+                active.top = TARGET_DIM.height / 2;
+            }
+            active.setCoords();
+            canvas.renderAll();
+        }
+
+        // --- GÖRSEL VE ARKA PLAN ---
         function setCanvasBg(url) {
             fabric.Image.fromURL(url, function(img) {
-                const targetDim = RATIOS[currentRatio];
                 img.set({
-                    scaleX: targetDim.width / img.width,
-                    scaleY: targetDim.height / img.height,
+                    scaleX: TARGET_DIM.width / img.width,
+                    scaleY: TARGET_DIM.height / img.height,
                     originX: 'left',
                     originY: 'top'
                 });
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
             }, { crossOrigin: 'anonymous' });
+        }
+
+        function renderBgGallery() {
+            const grid = document.getElementById('bgGalleryGrid');
+            grid.innerHTML = '';
+            HD_BACKGROUNDS.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.className = 'rounded-lg border border-slate-700 hover:border-red-500 cursor-pointer h-20 w-full object-cover transition';
+                img.onclick = () => setCanvasBg(url);
+                grid.appendChild(img);
+            });
         }
 
         function handleImageUpload(e, type) {
@@ -334,7 +501,7 @@
                     setCanvasBg(f.target.result);
                 } else {
                     fabric.Image.fromURL(f.target.result, function(img) {
-                        img.scaleToWidth(350);
+                        img.scaleToWidth(380);
                         canvas.add(img);
                         canvas.centerObject(img);
                         canvas.setActiveObject(img);
@@ -342,16 +509,6 @@
                 }
             };
             reader.readAsDataURL(file);
-        }
-
-        function bringForward() {
-            const active = canvas.getActiveObject();
-            if(active) canvas.bringForward(active);
-        }
-
-        function sendBackward() {
-            const active = canvas.getActiveObject();
-            if(active) canvas.sendBackwards(active);
         }
 
         function deleteActiveObject() {
@@ -363,128 +520,71 @@
             }
         }
 
-        // --- AI GÖRSEL ÜRETİMİ ---
-        function generateAIImage() {
-            const prompt = document.getElementById('aiPrompt').value.trim();
+        // --- ARAŞTIRMACI AI ARKA PLAN MOTORU ---
+        async function generateAIImage() {
+            const rawPrompt = document.getElementById('aiPrompt').value.trim();
             const style = document.getElementById('aiStyle').value;
-            if (!prompt) return alert('Lütfen AI için bir açıklama (prompt) girin!');
+            const isResearchEnabled = document.getElementById('aiResearchCheck').checked;
+
+            if (!rawPrompt) return alert('Lütfen AI için bir konu veya anahtar kelime girin!');
 
             const btn = document.getElementById('btnGenerateAI');
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Yapay Zeka Üretiyor...';
+            btn.innerHTML = '<i class="fa-solid fa-magnifying-glass fa-spin"></i> Bilgiler Araştırılıyor...';
 
-            const fullPrompt = `${prompt} ${style}`;
-            const targetDim = RATIOS[currentRatio];
-            const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${targetDim.width}&height=${targetDim.height}&nologo=true&seed=${Math.floor(Math.random()*9999)}`;
+            let enrichedKeywords = rawPrompt;
+
+            if (isResearchEnabled) {
+                try {
+                    // Web/Wikipedia API üzerinden karakter ve konuyla ilgili arka plan görsel detaylarını çekme
+                    const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(rawPrompt)}`);
+                    if(wikiRes.ok) {
+                        const data = await wikiRes.json();
+                        if(data.extract) {
+                            // Promptu zenginleştir
+                            const keywords = data.extract.split(' ').slice(0, 10).join(' ');
+                            enrichedKeywords += `, ${keywords}`;
+                        }
+                    }
+                } catch(err) {
+                    console.log('Arama desteği standart prompta geçti:', err);
+                }
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> AI Arka Plan Üretiliyor...';
+
+            const fullPrompt = `${enrichedKeywords}, ${style}`;
+            const aiUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}?width=${TARGET_DIM.width}&height=${TARGET_DIM.height}&nologo=true&seed=${Math.floor(Math.random()*99999)}`;
 
             setCanvasBg(aiUrl);
 
             setTimeout(() => {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> AI Görsel Üret & Arka Plan Yap';
-            }, 3500);
+                btn.innerHTML = '<i class="fa-solid fa-bolt"></i> Bilgi Araştır & AI Arka Plan Üret';
+            }, 3000);
         }
 
-        // --- 🎲 DİNAMİK RASTGELE KAPAK MOTORU ---
+        // --- RASTGELE KAPAK MOTORU ---
         function generateRandomThumbnail() {
             canvas.clear();
-            const dim = RATIOS[currentRatio];
+            const randomBg = HD_BACKGROUNDS[Math.floor(Math.random() * HD_BACKGROUNDS.length)];
+            setCanvasBg(randomBg);
 
-            // 1. Rastgele Arka Plan Rengi/Gradyanı
-            const gradients = ['#0f172a', '#1e1b4b', '#450a0a', '#064e3b', '#312e81', '#831843'];
-            canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
-            canvas.setBackgroundColor(gradients[Math.floor(Math.random()*gradients.length)], canvas.renderAll.bind(canvas));
+            const word1 = RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)];
+            const word2 = RANDOM_WORDS[Math.floor(Math.random() * RANDOM_WORDS.length)];
+            
+            const fonts = ['Anton', 'Bebas Neue', 'Montserrat', 'Press Start 2P', 'Righteous', 'Cinzel', 'Luckiest Guy', 'Titan One', 'Rubik Glitch'];
+            const colors = ['#facc15', '#ef4444', '#22c55e', '#38bdf8', '#ffffff', '#a855f7'];
 
-            // 2. Rastgele Başlıklar ve Fontlar
-            const titles = ['EFSANE BÖLÜM', 'GİZLİ YÖNTEM', 'SÖYLEMEDİLER!', '100 DAKİKA', 'DEV REHBER', 'İNANILMAZ!'];
-            const fonts = ['Anton', 'Bebas Neue', 'Montserrat', 'Bangers', 'Pacifico', 'Permanent Marker'];
-            const colors = ['#facc15', '#ef4444', '#22c55e', '#38bdf8', '#ffffff'];
-
-            const text = new fabric.IText(titles[Math.floor(Math.random()*titles.length)], {
-                left: dim.width / 2,
-                top: dim.height / 2 - 30,
-                fontFamily: fonts[Math.floor(Math.random()*fonts.length)],
-                fontSize: Math.floor(Math.random() * 40) + 70,
-                fill: colors[Math.floor(Math.random()*colors.length)],
+            const title = new fabric.IText(`${word1}\n${word2}`, {
+                left: TARGET_DIM.width / 2,
+                top: TARGET_DIM.height / 2,
+                fontFamily: fonts[Math.floor(Math.random() * fonts.length)],
+                fontSize: 85,
+                fill: colors[Math.floor(Math.random() * colors.length)],
                 stroke: '#000000',
                 strokeWidth: 4,
-                originX: 'center',
-                originY: 'center'
-            });
-
-            // 3. Rastgele İkinci Metin / Rozet
-            const subText = new fabric.IText('🔥 TIKLA VE İZLE', {
-                left: dim.width / 2,
-                top: dim.height / 2 + 80,
-                fontFamily: 'Montserrat',
-                fontSize: 35,
-                fill: '#ffffff',
-                textBackgroundColor: '#ef4444',
-                originX: 'center',
-                originY: 'center'
-            });
-
-            canvas.add(text);
-            canvas.add(subText);
-            canvas.setActiveObject(text);
-        }
-
-        // --- 20 ADET GERÇEK ŞABLON MOTORU ---
-        const TEMPLATES_DATA = [
-            { name: "Gaming / Oyun", bg: "#0f172a", text: "EFSANE MAÇ!", font: "Anton", color: "#ef4444" },
-            { name: "Vlog / Günlük", bg: "#831843", text: "BİR GÜNÜM!", font: "Pacifico", color: "#facc15" },
-            { name: "Teknoloji", bg: "#1e1b4b", text: "SATIIN ALDIN!", font: "Montserrat", color: "#38bdf8" },
-            { name: "Eğitim / Rehber", bg: "#064e3b", text: "0'DAN 100'E", font: "Bebas Neue", color: "#22c55e" },
-            { name: "Soru & Cevap", bg: "#312e81", text: "SORULARINIZ!", font: "Bangers", color: "#ffffff" },
-            { name: "Podcast", bg: "#18181b", text: "BÖLÜM #01", font: "Oswald", color: "#f43f5e" },
-            { name: "Kripto / Borsa", bg: "#022c22", text: "BÜYÜK YÜKSELİŞ", font: "Montserrat", color: "#10b981" },
-            { name: "Spor / Fitness", bg: "#450a0a", text: "DEĞİŞİM!", font: "Anton", color: "#f97316" },
-            { name: "Müzik / Beat", bg: "#2e1065", text: "TRAP BEAT 2026", font: "Permanent Marker", color: "#a855f7" },
-            { name: "Tepki / Reaction", bg: "#701a75", text: "ŞOK OLDU!", font: "Bangers", color: "#facc15" },
-            { name: "Yemek / Tarif", bg: "#7c2d12", text: "EN İYİ TARİF", font: "Lobster", color: "#fde047" },
-            { name: "Sinema / Film", bg: "#09090b", text: "FİLM İNCELEMESİ", font: "Oswald", color: "#e11d48" },
-            { name: "Korku / Hikaye", bg: "#111827", text: "GECE 03:00...", font: "Permanent Marker", color: "#dc2626" },
-            { name: "Yazılım / Kod", bg: "#030712", text: "PYTHON REHBERİ", font: "Montserrat", color: "#60a5fa" },
-            { name: "E-Ticaret", bg: "#065f46", text: "%50 İNDİRİM!", font: "Anton", color: "#facc15" },
-            { name: "Seyahat / Travel", bg: "#0c4a6e", text: "AMSTERDAM!", font: "Pacifico", color: "#ffffff" },
-            { name: "Motive / Başarı", bg: "#1e293b", text: "ASLA VAZGEÇME", font: "Oswald", color: "#eab308" },
-            { name: "Futbol / Maç", bg: "#14532d", text: "DEV DERBİ!", font: "Bebas Neue", color: "#ffffff" },
-            { name: "Mizah / Komedi", bg: "#a16207", text: "GÜLME GARANTİ", font: "Bangers", color: "#ffffff" },
-            { name: "Minimalist", bg: "#27272a", text: "SADECE İZLE.", font: "Montserrat", color: "#a1a1aa" }
-        ];
-
-        function render20Templates() {
-            const grid = document.getElementById('templatesGrid');
-            grid.innerHTML = '';
-
-            TEMPLATES_DATA.forEach((tmpl, index) => {
-                const card = document.createElement('div');
-                card.className = 'bg-slate-950 border border-slate-800 hover:border-red-500 rounded-lg p-2 cursor-pointer flex flex-col justify-between h-20 transition';
-                card.onclick = () => loadTemplate(index + 1);
-                card.innerHTML = `
-                    <span class="text-[10px] font-bold text-slate-400">#${index+1} ${tmpl.name}</span>
-                    <span class="text-xs font-black truncate" style="color: ${tmpl.color}">${tmpl.text}</span>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function loadTemplate(id) {
-            canvas.clear();
-            const tmpl = TEMPLATES_DATA[(id - 1) % TEMPLATES_DATA.length];
-            const dim = RATIOS[currentRatio];
-
-            canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
-            canvas.setBackgroundColor(tmpl.bg, canvas.renderAll.bind(canvas));
-
-            const title = new fabric.IText(tmpl.text, {
-                left: dim.width / 2,
-                top: dim.height / 2,
-                fontFamily: tmpl.font,
-                fontSize: 85,
-                fill: tmpl.color,
-                stroke: '#000000',
-                strokeWidth: 3,
+                textAlign: 'center',
                 originX: 'center',
                 originY: 'center'
             });
@@ -493,22 +593,56 @@
             canvas.setActiveObject(title);
         }
 
-        // --- YÜKSEK KALİTEDE İNDİRİCİ ---
-        function downloadThumbnail() {
-            const dim = RATIOS[currentRatio];
+        // --- 30 ŞABLON MOTORU ---
+        function render30Templates() {
+            const grid = document.getElementById('templatesGrid');
+            grid.innerHTML = '';
 
-            canvas.setZoom(1);
-            canvas.setDimensions({ width: dim.width, height: dim.height });
-
-            const dataURL = canvas.toDataURL({
-                format: 'png',
-                quality: 1.0
+            TEMPLATES_DATA.forEach((tmpl, index) => {
+                const card = document.createElement('div');
+                card.className = 'bg-slate-950 border border-slate-800 hover:border-red-500 rounded-lg p-2 cursor-pointer flex flex-col justify-between h-20 transition relative overflow-hidden group';
+                card.onclick = () => loadTemplate(index + 1);
+                card.innerHTML = `
+                    <img src="${tmpl.bg}" class="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-50 transition">
+                    <span class="text-[10px] font-bold text-slate-300 relative z-10">#${index+1} ${tmpl.name}</span>
+                    <span class="text-xs font-black truncate relative z-10" style="color: ${tmpl.color}">${tmpl.text}</span>
+                `;
+                grid.appendChild(card);
             });
+        }
+
+        function loadTemplate(id) {
+            canvas.clear();
+            const tmpl = TEMPLATES_DATA[(id - 1) % TEMPLATES_DATA.length];
+            setCanvasBg(tmpl.bg);
+
+            const title = new fabric.IText(tmpl.text, {
+                left: TARGET_DIM.width / 2,
+                top: TARGET_DIM.height / 2,
+                fontFamily: tmpl.font,
+                fontSize: 85,
+                fill: tmpl.color,
+                stroke: '#000000',
+                strokeWidth: 4,
+                originX: 'center',
+                originY: 'center'
+            });
+
+            canvas.add(title);
+            canvas.setActiveObject(title);
+        }
+
+        // --- İNDİRME ---
+        function downloadThumbnail() {
+            canvas.setZoom(1);
+            canvas.setDimensions({ width: TARGET_DIM.width, height: TARGET_DIM.height });
+
+            const dataURL = canvas.toDataURL({ format: 'png', quality: 1.0 });
 
             resizeCanvasContainer();
 
             const link = document.createElement('a');
-            link.download = `ThumbForge-${currentRatio}-${Date.now()}.png`;
+            link.download = `ThumbForge-16x9-${Date.now()}.png`;
             link.href = dataURL;
             link.click();
         }
